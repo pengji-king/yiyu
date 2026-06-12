@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一隅 · 暑假沉淀</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <nav id="sidebar">
+            <div class="logo">
+                <span class="logo-icon">⏳</span>
+                <span class="logo-text">一隅</span>
+            </div>
+            <div class="today-badge" id="sidebar-date"></div>
+            <ul class="nav-items">
+                <li><a href="#/" class="nav-link active" data-view="dashboard">📊 概览</a></li>
+                <li><a href="#/calendar" class="nav-link" data-view="calendar">📅 日历</a></li>
+                <li><a href="#/plans" class="nav-link" data-view="plans">📋 计划</a></li>
+                <li><a href="#/checkin" class="nav-link" data-view="checkin">✅ 打卡</a></li>
+            </ul>
+            <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border);">
+                <a href="#" class="nav-link" id="settings-btn" style="font-size:14px;">🎨 个性化</a>
+            </div>
+        </nav>
+        <main id="main-content"></main>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal" id="modal-box"></div>
+    </div>
+
+    <div id="tooltip" class="tooltip hidden"></div>
+
+    <script src="/js/onboarding.js"></script>
+    <script src="/js/settings.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/clock.js"></script>
+    <script src="/js/calendar.js"></script>
+    <script src="/js/plans.js"></script>
+    <script src="/js/checkin.js"></script>
+</body>
+</html>

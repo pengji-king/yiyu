@@ -1,0 +1,13 @@
+{
+  "habits": [
+    {
+      "id": "example_h1",
+      "name": "示例：每天阅读",
+      "emoji": "📖",
+      "color": "#C4956A",
+      "sort_order": 0,
+      "created_at": ""
+    }
+  ],
+  "records": {}
+}

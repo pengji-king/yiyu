@@ -1,0 +1,14 @@
+[
+  {
+    "id": "example001",
+    "title": "示例：学习一门新技能",
+    "description": "这是一个示例计划，你可以删除它",
+    "category": "技能",
+    "status": "in_progress",
+    "deadline": "",
+    "color": "#4A90D9",
+    "sort_order": 0,
+    "created_at": "",
+    "updated_at": ""
+  }
+]

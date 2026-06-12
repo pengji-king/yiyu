@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.env
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# IDE
+.vscode/
+.idea/
+
+# User data (keep example data, but ignore runtime changes — users should fork clean)
+# data/*.json is tracked for example data; after first run, use .gitignore locally if you add personal data
