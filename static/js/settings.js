@@ -5,7 +5,8 @@ const Settings = {
     defaults: {
         accent: '#C4956A',
         background: null,
-        blur: 0, // 0-20px
+        glass: 8,   // 0–20px backdrop-filter blur on foreground
+        opacity: 70, // 40–100% foreground opacity
     },
 
     get() {
@@ -24,7 +25,7 @@ const Settings = {
         document.documentElement.style.setProperty('--accent', s.accent);
         document.documentElement.style.setProperty('--accent-light', this._lighten(s.accent, 0.6));
 
-        // Background overlay (blur layer — separate from content)
+        // Background overlay — always clear, no blur
         let overlay = document.getElementById('yiyu-bg-overlay');
         if (s.background) {
             if (!overlay) {
@@ -33,12 +34,12 @@ const Settings = {
                 document.body.prepend(overlay);
             }
             overlay.style.backgroundImage = `url(${s.background})`;
-            overlay.style.filter = `blur(${s.blur || 0}px)`;
+            overlay.style.filter = 'none';
         } else {
             if (overlay) overlay.remove();
         }
 
-        // Dynamic theme styles
+        // Glass mode CSS
         const styleId = 'yiyu-dynamic-theme';
         let styleEl = document.getElementById(styleId);
         if (!styleEl) {
@@ -46,11 +47,64 @@ const Settings = {
             styleEl.id = styleId;
             document.head.appendChild(styleEl);
         }
-        styleEl.textContent = `
-            .nav-link.active { background: ${s.accent} !important; }
-            .btn-primary { background: ${s.accent}; }
-            .stat-card .stat-value { color: ${s.accent}; }
-        `;
+
+        if (s.background) {
+            const glass = s.glass || 0;
+            const alpha = (s.opacity || 70) / 100;
+            // Light surfaces become semi-transparent with backdrop blur
+            const sidebarAlpha = Math.max(0.2, alpha - 0.1);
+            const cardAlpha = alpha;
+            const modalAlpha = Math.min(1, alpha + 0.15);
+            styleEl.textContent = `
+                .nav-link.active { background: ${s.accent} !important; }
+                .btn-primary { background: ${s.accent}; }
+                .stat-card .stat-value { color: ${s.accent}; }
+
+                /* Glass morphism — foreground becomes translucent */
+                body { background: transparent !important; }
+                #sidebar {
+                    background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+                .card, .cal-cell {
+                    background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+                .stat-card, .plan-card {
+                    background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+                .modal {
+                    background: rgba(255,255,255, ${modalAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${Math.max(glass, 12)}px);
+                    -webkit-backdrop-filter: blur(${Math.max(glass, 12)}px);
+                }
+                .calendar-grid {
+                    background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+                .cal-header {
+                    background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+                .tooltip {
+                    background: rgba(45,45,45, 0.85) !important;
+                    backdrop-filter: blur(${glass}px);
+                    -webkit-backdrop-filter: blur(${glass}px);
+                }
+            `;
+        } else {
+            styleEl.textContent = `
+                .nav-link.active { background: ${s.accent} !important; }
+                .btn-primary { background: ${s.accent}; }
+                .stat-card .stat-value { color: ${s.accent}; }
+            `;
+        }
     },
 
     renderModal() {
@@ -60,7 +114,7 @@ const Settings = {
             '#D4954B', '#5A8F8F', '#B56A8A', '#6A8FB5', '#8B8B8B',
         ];
         const bgPreview = s.background
-            ? `<div style="width:100%;height:60px;border-radius:8px;background:url(${s.background}) center/cover;margin-bottom:8px;"></div>`
+            ? `<div style="width:100%;height:56px;border-radius:8px;background:url(${s.background}) center/cover;margin-bottom:8px;border:1px solid var(--border);"></div>`
             : '';
 
         return `
@@ -99,11 +153,20 @@ const Settings = {
 
             ${s.background ? `
             <div class="form-group">
-                <label>背景虚化 <span style="font-weight:400;color:var(--text-secondary);">— ${s.blur || 0}px</span></label>
-                <input type="range" id="settings-blur" min="0" max="20" value="${s.blur || 0}" step="1"
+                <label>毛玻璃模糊 <span style="font-weight:400;color:var(--text-secondary);">— ${s.glass || 0}px</span></label>
+                <input type="range" id="settings-glass" min="0" max="20" value="${s.glass || 8}" step="1"
                     style="width:100%;accent-color:var(--accent);" />
                 <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);">
-                    <span>清晰</span><span>柔和</span><span>梦幻</span>
+                    <span>清晰</span><span>半透</span><span>毛玻璃</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>前景透明度 <span style="font-weight:400;color:var(--text-secondary);">— ${s.opacity || 70}%</span></label>
+                <input type="range" id="settings-opacity" min="40" max="100" value="${s.opacity || 70}" step="5"
+                    style="width:100%;accent-color:var(--accent);" />
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);">
+                    <span>很透</span><span>适中</span><span>实色</span>
                 </div>
             </div>
             ` : ''}
@@ -120,10 +183,8 @@ const Settings = {
                 const color = btn.dataset.color;
                 this.save({ accent: color });
                 this.apply();
-                // Update picker
                 const picker = document.getElementById('settings-accent-picker');
                 if (picker) picker.value = color;
-                // Refresh swatches
                 document.querySelectorAll('.theme-swatch').forEach(b => {
                     b.classList.toggle('active', b.dataset.color === color);
                 });
@@ -170,15 +231,25 @@ const Settings = {
             });
         }
 
-        const blurSlider = document.getElementById('settings-blur');
-        if (blurSlider) {
-            blurSlider.addEventListener('input', () => {
-                const val = parseInt(blurSlider.value);
-                this.save({ blur: val });
+        const glassSlider = document.getElementById('settings-glass');
+        if (glassSlider) {
+            glassSlider.addEventListener('input', () => {
+                const val = parseInt(glassSlider.value);
+                this.save({ glass: val });
                 this.apply();
-                // Update label without full re-render
-                const label = blurSlider.closest('.form-group').querySelector('label span');
+                const label = glassSlider.closest('.form-group').querySelector('label span');
                 if (label) label.textContent = `— ${val}px`;
+            });
+        }
+
+        const opacitySlider = document.getElementById('settings-opacity');
+        if (opacitySlider) {
+            opacitySlider.addEventListener('input', () => {
+                const val = parseInt(opacitySlider.value);
+                this.save({ opacity: val });
+                this.apply();
+                const label = opacitySlider.closest('.form-group').querySelector('label span');
+                if (label) label.textContent = `— ${val}%`;
             });
         }
 
