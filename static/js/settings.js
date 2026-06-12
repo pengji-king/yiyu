@@ -62,18 +62,29 @@ const Settings = {
 
                 /* Glass morphism — foreground becomes translucent */
                 body { background: transparent !important; }
+                #main-content { background: transparent !important; }
                 #sidebar {
                     background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important;
                     backdrop-filter: blur(${glass}px);
                     -webkit-backdrop-filter: blur(${glass}px);
                 }
-                .card, .cal-cell {
+                /* Cards & surfaces across all pages */
+                .card,
+                .stat-card,
+                .plan-card,
+                .calendar-grid,
+                .cal-cell,
+                .check-item,
+                .heatmap-container,
+                .empty-state {
                     background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
                     backdrop-filter: blur(${glass}px);
                     -webkit-backdrop-filter: blur(${glass}px);
                 }
-                .stat-card, .plan-card {
-                    background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
+                .cal-header,
+                .calendar-nav,
+                .check-item:hover {
+                    background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important;
                     backdrop-filter: blur(${glass}px);
                     -webkit-backdrop-filter: blur(${glass}px);
                 }
@@ -82,21 +93,19 @@ const Settings = {
                     backdrop-filter: blur(${Math.max(glass, 12)}px);
                     -webkit-backdrop-filter: blur(${Math.max(glass, 12)}px);
                 }
-                .calendar-grid {
-                    background: rgba(255,255,255, ${cardAlpha.toFixed(2)}) !important;
-                    backdrop-filter: blur(${glass}px);
-                    -webkit-backdrop-filter: blur(${glass}px);
-                }
-                .cal-header {
-                    background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important;
-                    backdrop-filter: blur(${glass}px);
-                    -webkit-backdrop-filter: blur(${glass}px);
+                .onboarding-tooltip {
+                    background: rgba(255,255,255, ${modalAlpha.toFixed(2)}) !important;
+                    backdrop-filter: blur(${Math.max(glass, 12)}px);
+                    -webkit-backdrop-filter: blur(${Math.max(glass, 12)}px);
                 }
                 .tooltip {
                     background: rgba(45,45,45, 0.85) !important;
-                    backdrop-filter: blur(${glass}px);
-                    -webkit-backdrop-filter: blur(${glass}px);
+                    backdrop-filter: blur(4px);
+                    -webkit-backdrop-filter: blur(4px);
                 }
+                /* Reset hover overrides that use solid colors */
+                .check-item:hover { background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important; }
+                .cal-cell:hover { background: rgba(250,248,245, ${sidebarAlpha.toFixed(2)}) !important; }
             `;
         } else {
             styleEl.textContent = `
