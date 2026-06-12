@@ -25,6 +25,21 @@ body {
     min-height: 100vh;
 }
 
+/* ── Background Overlay ──────────────────────────────────────── */
+#yiyu-bg-overlay {
+    position: fixed; inset: -20px;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+#yiyu-bg-overlay::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(247, 243, 238, 0.55);
+}
+
 /* ── Sidebar ────────────────────────────────────────────────── */
 #sidebar {
     position: fixed; top: 0; left: 0;

@@ -4,7 +4,8 @@ const Settings = {
 
     defaults: {
         accent: '#C4956A',
-        background: null, // base64 data URL or null
+        background: null,
+        blur: 0, // 0-20px
     },
 
     get() {
@@ -23,19 +24,21 @@ const Settings = {
         document.documentElement.style.setProperty('--accent', s.accent);
         document.documentElement.style.setProperty('--accent-light', this._lighten(s.accent, 0.6));
 
+        // Background overlay (blur layer — separate from content)
+        let overlay = document.getElementById('yiyu-bg-overlay');
         if (s.background) {
-            document.body.style.backgroundImage = `url(${s.background})`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
-            document.body.style.backgroundAttachment = 'fixed';
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'yiyu-bg-overlay';
+                document.body.prepend(overlay);
+            }
+            overlay.style.backgroundImage = `url(${s.background})`;
+            overlay.style.filter = `blur(${s.blur || 0}px)`;
         } else {
-            document.body.style.backgroundImage = '';
-            document.body.style.backgroundSize = '';
-            document.body.style.backgroundPosition = '';
-            document.body.style.backgroundAttachment = '';
+            if (overlay) overlay.remove();
         }
 
-        // Update the sidebar active link style
+        // Dynamic theme styles
         const styleId = 'yiyu-dynamic-theme';
         let styleEl = document.getElementById(styleId);
         if (!styleEl) {
@@ -92,8 +95,18 @@ const Settings = {
                     </label>
                     ${s.background ? '<button class="btn-sm" id="settings-bg-remove" style="color:var(--danger);">✕ 移除背景</button>' : ''}
                 </div>
-                <span style="font-size:11px;color:var(--text-secondary);">建议使用深色或模糊图片，保证文字可读</span>
             </div>
+
+            ${s.background ? `
+            <div class="form-group">
+                <label>背景虚化 <span style="font-weight:400;color:var(--text-secondary);">— ${s.blur || 0}px</span></label>
+                <input type="range" id="settings-blur" min="0" max="20" value="${s.blur || 0}" step="1"
+                    style="width:100%;accent-color:var(--accent);" />
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);">
+                    <span>清晰</span><span>柔和</span><span>梦幻</span>
+                </div>
+            </div>
+            ` : ''}
 
             <div class="form-actions">
                 <button class="btn-sm" id="settings-reset" style="margin-right:auto;color:var(--text-secondary);">恢复默认</button>
@@ -154,6 +167,18 @@ const Settings = {
                 hideModal();
                 showModal(this.renderModal());
                 this.bindEvents();
+            });
+        }
+
+        const blurSlider = document.getElementById('settings-blur');
+        if (blurSlider) {
+            blurSlider.addEventListener('input', () => {
+                const val = parseInt(blurSlider.value);
+                this.save({ blur: val });
+                this.apply();
+                // Update label without full re-render
+                const label = blurSlider.closest('.form-group').querySelector('label span');
+                if (label) label.textContent = `— ${val}px`;
             });
         }
 
